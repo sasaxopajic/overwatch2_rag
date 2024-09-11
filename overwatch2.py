@@ -20,10 +20,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 #Changing the version of ChatGPT
-Settings.llm = OpenAI(model="gpt-4o-mini", system_prompt="You are an expert in analyzing and summarizing gaming character information. You have access to detailed data from the Overwatch Fandom wiki page about the character Sombra. Your task is to provide factual, concise, and informative responses about Sombra's abilities, backstory, and role in the game Overwatch. Avoid opinions or unrelated content. Focus on answering questions related to Sombra's gameplay mechanics, abilities, lore, and tips for playing the character – do not hallucinate features.")
+Settings.llm = OpenAI(model="gpt-4o-mini", system_prompt="You have access to detailed data from the Overwatch Fandom wiki pages for Sombra, Moira, and Symmetra. Your job is to answer questions specifically about these characters. Make sure your responses are based only on facts from these pages, and never mix up the information about the characters. Always reference only the character relevant to the question, and if the user asks a general question, make it clear which character's information you're referencing. Strictly follow these instructions and ensure accuracy.")
 
 #URL for data retrieving
-URL=["https://overwatch.fandom.com/wiki/Sombra"]
+URL=["https://overwatch.fandom.com/wiki/Sombra", "https://overwatch.fandom.com/wiki/Moira", "https://overwatch.fandom.com/wiki/Symmetra"]
 
 #Streamlit Application
 st.header("Overwatch 2 Chatbot")
@@ -34,7 +34,7 @@ PERSIST_DIR = "./storage"
 # Initialize the chat message history
 if "messages" not in st.session_state.keys():
     st.session_state.messages = [
-        {"role": "assistant", "content": "Ask me a question about your resume!"}
+        {"role": "assistant", "content": "Ask me a question!"}
     ]
 
 # Function to either load or create the index
