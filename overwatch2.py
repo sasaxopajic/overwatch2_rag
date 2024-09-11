@@ -1,15 +1,15 @@
 import streamlit as st
 
-#Using SimpleWebPageReader to scrape data from a website
 from llama_index.core import (
-    SummaryIndex,
     Settings,
     VectorStoreIndex,
     load_index_from_storage,
     StorageContext
     )
+
+#Using SimpleWebPageReader to scrape data from a website
 from llama_index.readers.web import SimpleWebPageReader
-from IPython.display import Markdown, display
+
 import os
 
 from llama_index.llms.openai import OpenAI
