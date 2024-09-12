@@ -74,5 +74,14 @@ if st.session_state.messages[-1]["role"] != "assistant":
         with st.spinner("Thinking..."):
             response = chat_engine.chat(prompt)
             st.write(response.response)
+            #Expander for showing the information about the source nodes used to synthesize the response
+            for node in response.source_nodes:
+                with st.expander(f"{str(round(node.score*100, 2))} {"%"}"):
+                    st.markdown(node.text)
+                    #Check if metadata exists
+                    if len(node.metadata) == 0:
+                        st.info("\nMetadata for this node doesn't exist.")
+                    else:
+                        st.markdown(f"{"Metadata"}\n {node.text}")
             message = {"role": "assistant", "content": response.response}
             st.session_state.messages.append(message) # Add response to message history
