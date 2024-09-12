@@ -49,9 +49,11 @@ To get started with **overwatch2_rag**, follow these steps to set up the project
 
 ## Usage
 
-   To use overwatch2_rag, follow these steps:
+   To run overwatch2_rag, do the following:
 
    ```bash
    streamlit run overwatch2.py
    ```
-   And you're now all set up! Heroes never die! 
+   And you're now all set up!
+
+# Heroes never die! 
