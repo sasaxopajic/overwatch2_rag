@@ -1,4 +1,5 @@
 import streamlit as st
+import os
 
 from llama_index.core import (
     Settings,
@@ -10,8 +11,21 @@ from llama_index.core import (
 #Using SimpleWebPageReader to scrape data from a website
 from llama_index.readers.web import SimpleWebPageReader
 
-import os
+#Semantic chunking (TextSplitter)
+from llama_index.core.node_parser import SemanticSplitterNodeParser
+from llama_index.embeddings.openai import OpenAIEmbedding
 
+embed_model = OpenAIEmbedding()
+splitter = SemanticSplitterNodeParser(
+    buffer_size=1, breakpoint_percentile_threshold=95, embed_model=embed_model
+)
+
+#Title extractor
+from llama_index.core.extractors import TitleExtractor
+
+title_extractor = TitleExtractor(nodes=5)
+
+#Import LLM
 from llama_index.llms.openai import OpenAI
 
 #Load environmental variables
@@ -48,7 +62,8 @@ def load_or_create_index():
         # If not, create a new index and persist it
         reader = SimpleWebPageReader(html_to_text=True)
         docs = reader.load_data(URL)
-        index = VectorStoreIndex.from_documents(docs)
+        #Extracting the metadata with transformations
+        index = VectorStoreIndex.from_documents(docs, transformations=[splitter, title_extractor])
         index.storage_context.persist(persist_dir=PERSIST_DIR)
         st.info("New index created and persisted.")
     return index
@@ -75,13 +90,15 @@ if st.session_state.messages[-1]["role"] != "assistant":
             response = chat_engine.chat(prompt)
             st.write(response.response)
             #Expander for showing the information about the source nodes used to synthesize the response
+            st.header("Nodes retrieved")
             for node in response.source_nodes:
                 with st.expander(f"{str(round(node.score*100, 2))} {"%"}"):
                     st.markdown(node.text)
                     #Check if metadata exists
                     if len(node.metadata) == 0:
-                        st.info("\nMetadata for this node doesn't exist.")
+                        st.info("Metadata for this node doesn't exist.")
                     else:
-                        st.markdown(f"{"Metadata"}\n {node.text}")
+                        st.header("Metadata")
+                        st.markdown(f"{node.metadata}")
             message = {"role": "assistant", "content": response.response}
             st.session_state.messages.append(message) # Add response to message history
