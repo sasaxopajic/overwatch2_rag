@@ -8,6 +8,11 @@ from llama_index.core import (
     StorageContext
     )
 
+#Import HeroNameExtractor class from a .py file
+from hero_name_extractor import HeroNameExtractor
+
+hero_name_extractor = HeroNameExtractor()
+
 #Using SimpleWebPageReader to scrape data from a website
 from llama_index.readers.web import SimpleWebPageReader
 
@@ -63,7 +68,7 @@ def load_or_create_index():
         reader = SimpleWebPageReader(html_to_text=True)
         docs = reader.load_data(URL)
         #Extracting the metadata with transformations
-        index = VectorStoreIndex.from_documents(docs, transformations=[splitter, title_extractor])
+        index = VectorStoreIndex.from_documents(docs, transformations=[splitter, title_extractor, hero_name_extractor])
         index.storage_context.persist(persist_dir=PERSIST_DIR)
         st.info("New index created and persisted.")
     return index
