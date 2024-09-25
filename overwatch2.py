@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import json
 
 from llama_index.core import (
     Settings,
@@ -58,20 +59,24 @@ if "messages" not in st.session_state.keys():
 
 # Function to either load or create the index
 def load_or_create_index():
-    if os.path.exists(PERSIST_DIR):  # Check if persistent directory exists
-        # Load the index from the storage directory
-        storage_context = StorageContext.from_defaults(persist_dir=PERSIST_DIR)
-        index = load_index_from_storage(storage_context)
-        st.info("Index loaded from persisted storage.")
-    else:
-        # If not, create a new index and persist it
-        reader = SimpleWebPageReader(html_to_text=True)
-        docs = reader.load_data(URL)
-        #Extracting the metadata with transformations
-        index = VectorStoreIndex.from_documents(docs, transformations=[splitter, title_extractor, hero_name_extractor])
-        index.storage_context.persist(persist_dir=PERSIST_DIR)
-        st.info("New index created and persisted.")
-    return index
+    try:
+        if os.path.exists(PERSIST_DIR):  # Check if persistent directory exists
+            # Load the index from the storage directory
+            storage_context = StorageContext.from_defaults(persist_dir=PERSIST_DIR)
+            index = load_index_from_storage(storage_context)
+            st.info("Index loaded from persisted storage.")
+        else:
+            # If not, create a new index and persist it
+            reader = SimpleWebPageReader(html_to_text=True)
+            docs = reader.load_data(URL)
+            # Extracting the metadata with transformations
+            index = VectorStoreIndex.from_documents(docs, transformations=[splitter, title_extractor, hero_name_extractor])
+            index.storage_context.persist(persist_dir=PERSIST_DIR)
+            st.info("New index created and persisted.")
+        return index
+    except json.JSONDecodeError as e:
+        st.error(f"Failed to parse JSON: {e}")
+        return None
 
 # Load the index (either from disk or by creating a new one)
 index = load_or_create_index()
