@@ -9,6 +9,9 @@ from llama_index.core import (
     StorageContext
     )
 
+# Import create_chat_engine
+from overwatch2_query_engine import create_chat_engine
+
 #Import HeroNameExtractor class from a .py file
 from hero_name_extractor import HeroNameExtractor
 
@@ -82,7 +85,7 @@ def load_or_create_index():
 index = load_or_create_index()
 
 #Create the chat engine
-chat_engine = index.as_chat_engine(chat_mode="openai", verbose=True)
+chat_engine = create_chat_engine(index)
 
 #Prompt for user input and display message history
 if prompt := st.chat_input("Your question"): # Prompt for user input and save to chat history
