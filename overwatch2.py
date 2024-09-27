@@ -104,14 +104,15 @@ if st.session_state.messages[-1]["role"] != "assistant":
             st.write(response.response)
             #Expander for showing the information about the source nodes used to synthesize the response
             st.header("Nodes retrieved")
-            for node in response.source_nodes:
-                with st.expander(f"{str(round(node.score*100, 2))} {"%"}"):
-                    st.markdown(node.text)
-                    #Check if metadata exists
-                    if len(node.metadata) == 0:
-                        st.info("Metadata for this node doesn't exist.")
-                    else:
-                        st.header("Metadata")
-                        st.markdown(f"{node.metadata}")
+            for node in response.sources:
+                for source in node.raw_output:
+                    with st.expander(f"{str(round(source.score*100, 2))} {"%"}"):
+                        st.markdown(source.text)
+                        #Check if metadata exists
+                        if len(source.metadata) == 0:
+                            st.info("Metadata for this node doesn't exist.")
+                        else:
+                            st.header("Metadata")
+                            st.markdown(f"{source.metadata}")
             message = {"role": "assistant", "content": response.response}
             st.session_state.messages.append(message) # Add response to message history
